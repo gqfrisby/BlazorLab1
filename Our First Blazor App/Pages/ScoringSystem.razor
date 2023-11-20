@@ -1,0 +1,50 @@
+﻿@page "/score"
+@using Our_First_Blazor_App.Data
+@using Our_First_Blazor_App.Services
+@inject IScoringService Scores
+
+Alliance Number:<input @bind=alliance /><br />
+Score 1:<input type="number" @bind=s1 /><br />
+Score 2:<input type="number" @bind=s2 /><br />
+Score 3:<input type="number" @bind=s3 /><br />
+<button @onclick=AddScore>Add</button> <br /><br />
+
+<table>
+    <thead>
+        <tr>
+            <td>Alliance Name</td>
+            <td>Score 1</td>
+            <td>Score 2</td>
+            <td>Score 3</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var kvp in Scores.RobotScores)
+        {
+            <tr>
+                <td>@kvp.Key</td>
+                <td>@kvp.Value.ScoreType1</td>
+                <td>@kvp.Value.ScoreType2</td>
+                <td>@kvp.Value.ScoreType3</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    string alliance = "";
+    int s1 = 0;
+    int s2 = 0;
+    int s3 = 0;
+
+    public async Task AddScore()
+    {
+        Scores.RobotScores[alliance] = new RobotScore()
+            {
+                AllianceNumber = alliance,
+                ScoreType1 = s1,
+                ScoreType2 = s2,
+                ScoreType3 = s3,
+            };
+    }
+}

@@ -1,0 +1,104 @@
+﻿@page "/"
+@page "/library"
+@using Our_First_Blazor_App.Data
+@using Our_First_Blazor_App.Services
+@inject ILibrary Books
+@inject IAvailableBooks ABooks
+
+BookID:<input type="number" @bind=AddBookID /><br />
+Title:<input type="text" @bind=AddBookTitle /><br />
+Author:<input type="text" @bind=AddBookAuthor /><br />
+ISBN:<input type="text" @bind=AddBookISBN /><br />
+<button @onclick=AddBook>Add Book</button><br /><br />
+
+BookID:<input type="number"@bind=EditBookID /><br />
+Title:<input type="text" @bind=EditBookTitle /><br />
+Author:<input type="text" @bind=EditBookAuthor /><br />
+ISBN:<input type="text" @bind=EditBookISBN /><br />
+<button @onclick=EditBook>Edit Book</button><br /><br />
+
+BookID:<input @bind=DeleteBookID /><br />
+<button @onclick=DeleteBook>Delete Book</button><br /><br />
+
+<b>All Current Books</b>
+<table>
+    <thead>
+        <tr>
+            <td>---BookID---</td>
+            <td>Title---</td>
+            <td>Author---</td>
+            <td>ISBN---</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in Books.currentBooks)
+        {
+            <tr>
+                <td>@kvp.Value.Id</td>
+                <td>@kvp.Value.Title</td>
+                <td>@kvp.Value.Author</td>
+                <td>@kvp.Value.ISBN</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    int AddBookID = 0;
+    string AddBookTitle = "";
+    string AddBookAuthor = "";
+    string AddBookISBN = "";
+
+    int EditBookID = 0;
+    string EditBookTitle = "";
+    string EditBookAuthor = "";
+    string EditBookISBN = "";
+
+    int DeleteBookID = 0;
+
+    public async Task AddBook()
+    {
+        Books.currentBooks[AddBookID] = new Book()
+            {
+                Id = AddBookID,
+                Title = AddBookTitle,
+                Author = AddBookAuthor,
+                ISBN = AddBookISBN,
+            };
+
+        ABooks.availableBooks[AddBookID] = new Book()
+            {
+                Id = AddBookID,
+                Title = AddBookTitle,
+                Author = AddBookAuthor,
+                ISBN = AddBookISBN,
+            };
+    }
+
+    public async Task EditBook()
+    {
+        if (Books.currentBooks[EditBookID] != null)
+        {
+            Books.currentBooks[EditBookID] = new Book()
+                {
+                    Id = EditBookID,
+                    Title = EditBookTitle,
+                    Author = EditBookAuthor,
+                    ISBN = EditBookISBN,
+                };
+
+            ABooks.availableBooks[EditBookID] = new Book()
+                {
+                    Id = EditBookID,
+                    Title = EditBookTitle,
+                    Author = EditBookAuthor,
+                    ISBN = EditBookISBN,
+                };
+        }
+    }
+    public async Task DeleteBook()
+    {
+        Books.currentBooks.Remove(DeleteBookID);
+        ABooks.availableBooks.Remove(DeleteBookID);
+    }
+}

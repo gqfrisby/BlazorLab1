@@ -1,0 +1,115 @@
+﻿@page "/rental"
+@using Our_First_Blazor_App.Data
+@using Our_First_Blazor_App.Services
+@inject IUsers listUser
+@inject IRentedBooks RBooks
+@inject IAvailableBooks ABooks
+@inject ILibrary Books
+
+BookID:<input type="number" @bind=BorrowBookID /><br />
+UserID:<input type="number" @bind=BorrowUserID /><br />
+<button @onclick=BorrowBook>Borrow Book</button><br /><br />
+
+BookID:<input type="number" @bind=ReturnBookID /><br />
+UserID:<input type="number" @bind=ReturnUserID /><br />
+<button @onclick=ReturnBook>Return Book</button><br /><br />
+
+<b> Current Users </b>
+<table>
+    <thead>
+        <tr>
+            <td>---UserID---</td>
+            <td>UserName---</td>
+            <td>Email---</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in listUser.CurrentUsers)
+        {
+            <tr>
+                <td>@(kvp.Value.Id + 1)</td>
+                <td>@kvp.Value.Name</td>
+                <td>@kvp.Value.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<b> Current Available Books </b>
+<table>
+    <thead>
+        <tr>
+            <td>---BookID---</td>
+            <td>Title---</td>
+            <td>Author---</td>
+            <td>ISBN---</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in ABooks.availableBooks)
+        {
+            <tr>
+                <td>@kvp.Value.Id</td>
+                <td>@kvp.Value.Title</td>
+                <td>@kvp.Value.Author</td>
+                <td>@kvp.Value.ISBN</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<b> Current Rented Books </b>
+<table>
+    <thead>
+        <tr>
+            <td>---BookID---</td>
+            <td>Title---</td>
+            <td>Author---</td>
+            <td>ISBN---</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in RBooks.rentedBooks)
+        {
+            <tr>
+                <td>@kvp.Value.Id</td>
+                <td>@kvp.Value.Title</td>
+                <td>@kvp.Value.Author</td>
+                <td>@kvp.Value.ISBN</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    int BorrowBookID = 0;
+    int BorrowUserID = 0;
+
+    int ReturnBookID = 0;
+    int ReturnUserID = 0;
+
+    public async Task BorrowBook()
+    {
+        RBooks.rentedBooks[BorrowBookID] = new Book()
+            {
+                Id = Books.currentBooks[BorrowBookID].Id,
+                Title = Books.currentBooks[BorrowBookID].Title,
+                Author = Books.currentBooks[BorrowBookID].Author,
+                ISBN = Books.currentBooks[BorrowBookID].ISBN,
+            };
+
+        ABooks.availableBooks.Remove(BorrowBookID);
+    }
+
+    public async Task ReturnBook()
+    {
+        RBooks.rentedBooks.Remove(ReturnBookID);
+        ABooks.availableBooks[ReturnBookID] = new Book()
+            {
+                Id = Books.currentBooks[BorrowBookID].Id,
+                Title = Books.currentBooks[BorrowBookID].Title,
+                Author = Books.currentBooks[BorrowBookID].Author,
+                ISBN = Books.currentBooks[BorrowBookID].ISBN,
+            };
+    }
+}

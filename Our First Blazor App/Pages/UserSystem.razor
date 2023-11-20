@@ -1,0 +1,79 @@
+﻿@page "/users"
+@using Our_First_Blazor_App.Data
+@using Our_First_Blazor_App.Services
+@inject IUsers Users
+
+UserName:<input type="text" @bind=AddUserName /><br />
+Email:<input type="email" @bind=AddEmail /><br />
+<button @onclick=AddUser>Add User</button><br /><br />
+
+UserID:<input type="number" @bind=EditUserID /><br />
+UserName:<input type = "text" @bind=EditUserName /><br />
+Email:<input type="email" @bind=EditEmail /><br />
+<button @onclick=EditUser>Edit User</button><br /><br />
+
+UserID:<input type="number" @bind=DeleteUserID /><br />
+<button @onclick=DeleteUser>Delete User</button><br /><br />
+
+<b>All Current Users</b>
+<table>
+    <thead>
+        <tr>
+            <td>---UserID---</td>
+            <td>UserName---</td>
+            <td>Email---</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in Users.CurrentUsers)
+        {
+            <tr>
+                <td>@(kvp.Value.Id + 1)</td>
+                <td>@kvp.Value.Name</td>
+                <td>@kvp.Value.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    string AddUserName = "";
+    string AddEmail = "";
+
+    string EditUserName = "";
+    string EditEmail = "";
+    int EditUserID = 0;
+
+    int DeleteUserID = 0;
+
+    public async Task AddUser()
+    {
+        int AddUserID = Users.CurrentUsers.Count;
+        Users.CurrentUsers[AddUserID] = new User()
+            {
+                Id = AddUserID,
+                Name = AddUserName,
+                Email = AddEmail,
+            };
+    }
+
+    public async Task EditUser()
+    {
+        EditUserID -= 1;
+        if (Users.CurrentUsers[EditUserID] != null)
+        {
+            Users.CurrentUsers[EditUserID] = new User()
+                {
+                    Id = EditUserID,
+                    Name = EditUserName,
+                    Email = EditEmail,
+                };
+        }
+    }
+
+    public async Task DeleteUser()
+    {
+        DeleteUserID -= 1;
+        Users.CurrentUsers.Remove(DeleteUserID);
+    }
+}
